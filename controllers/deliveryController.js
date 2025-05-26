@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Order = require('../models/Order'); // Update path if needed
 const Store = require('../models/Store');
+const { updateOrderStatusesGHN } = require('../services/ghnSyncOrder');
 const GHN_TOKEN = process.env.GHN_API_KEY;
 const GHN_API_BASE_URL = process.env.GHN_API_BASE_URL;
 const ghnAPI = axios.create({
@@ -60,20 +61,32 @@ const ghnController = {
 
     // 3. Tạo đơn hàng GHN sau khi shop duyệt
     createGHNOrder: async (req, res) => {
-        const { orderId } = req.body;
+        const orderId = req.params.id;
         try {
             const order = await Order.findById(orderId).lean();
             if (!order) return res.status(404).json({ message: 'Order not found' });
 
+            const store = await Store.findById(order.storeId);
+            if (!store || !store.ghnShopId || !store.districtId) {
+                return res.status(400).json({ message: 'Store not valid or missing GHN info' });
+            }
+
             const ghnOrderData = {
-                payment_type_id: 2,
+                payment_type_id: 1,
                 note: 'Giao hàng tiêu chuẩn',
                 required_note: 'KHONGCHOXEMHANG',
+                from_name: store.name,
+                from_phone: store.phoneNumber,
+                from_address: store.address,
+                from_ward_name: store.wardName,
+                from_district_name: store.districtName,
+                from_province_name: store.provinceName,
                 to_name: order.name,
                 to_phone: order.phone,
                 to_address: order.address,
-                to_ward_code: order.toWardCode,
-                to_district_id: order.toDistrictId,
+                to_ward_name: order.ward,
+                to_district_name: order.district,
+                to_province_name: order.city,
                 weight: 1000,
                 length: 20,
                 width: 20,
@@ -87,10 +100,13 @@ const ghnController = {
                 service_type_id: 2
             };
 
-            const response = await ghnAPI.post('/v2/shipping-order/create', ghnOrderData);
+            const response = await ghnAPI.post('/v2/shipping-order/create', ghnOrderData, { headers: { ShopId: store.ghnShopId } });
+            const journeyLog = { status: 'ready_to_pick', updated_date: new Date() };
             await Order.findByIdAndUpdate(orderId, {
                 ghnOrderCode: response.data.data.order_code,
-                status: 'WaitingForPickup'
+                status: 'WaitingPickup',
+                shippingStatus: 'ready_to_pick',
+                $push: { journeyLog: journeyLog }
             });
 
             res.json(response.data.data);
@@ -101,12 +117,10 @@ const ghnController = {
 
     // 4. Lấy trạng thái đơn GHN
     getGHNOrderStatus: async (req, res) => {
-        const { ghnOrderCode } = req.params;
+        const ghnOrderCode = req.params.id;
         try {
-            const response = await ghnAPI.post('/v2/shipping-order/detail', {
-                order_code: ghnOrderCode
-            });
-            res.json(response.data.data);
+            const response = await updateOrderStatusesGHN(ghnOrderCode);
+            res.status(200).json('OK');
         } catch (error) {
             res.status(500).json({ message: 'Lỗi lấy trạng thái GHN' });
         }

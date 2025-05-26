@@ -31,6 +31,7 @@ const OrderSchema = new mongoose.Schema({
     ref: 'Store',
     required: true
   },
+  ghnOrderCode: { type: String },
   userId: { type: String, required: true },
   name: { type: String, required: true },
   phone: { type: String, required: true },
@@ -38,6 +39,8 @@ const OrderSchema = new mongoose.Schema({
   city: { type: String, required: true },
   district: { type: String, required: true },
   ward: { type: String, required: true },
+
+
 
   promotionId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -58,14 +61,28 @@ const OrderSchema = new mongoose.Schema({
   // Trạng thái nội bộ
   status: {
     type: String,
-    enum: ['Confirm', 'On Wait', 'Delivering', 'Delivered', 'Cancel'],
-    default: 'Confirm'
+    enum: [
+      'Pending',       // Chờ xác nhận
+      'WaitingPickup', // Chờ lấy hàng
+      'Shipping',      // Chờ giao hàng / đang giao
+      'Completed',     // Đã giao
+      'Returned',      // Trả hàng
+      'Cancelled'      // Đã hủy
+    ],
+    default: 'Pending'
   },
 
   // Trạng thái từ GHN
   shippingStatus: {
     type: String // Ví dụ: 'ready_to_pick', 'delivering', 'returned', v.v.
-  }
+  },
+
+  journeyLog: [
+    {
+      status: { type: String, required: true }, // Trạng thái từ GHN
+      updated_date: { type: Date, required: true }, // Thời gian cập nhật
+    }
+  ]
 
 }, { timestamps: true });
 

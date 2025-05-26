@@ -36,7 +36,19 @@ const addressSchema = new mongoose.Schema({
     latitude: {
         type: Number,
         required: true
-    }
+    },
+    provinceId: {
+      type: Number,
+      required: true,
+    },
+    districtId: {
+      type: Number,
+      required: true,
+    },
+    wardCode: {
+      type: String,
+      required: true,
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Address', addressSchema);

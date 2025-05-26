@@ -1,9 +1,12 @@
 const Address = require('../models/Address');
+const addressService = require('../services/addressService');
 
 const addressController = {
     addAddress: async (req, res) => {
         try {
             const { address, userID, ward, district, phoneNumber, buyerName, city, latitude, longitude } = req.body;
+            
+            const addressIds = await addressService.resolveFullAddress({ provinceName: city, districtName: district, wardName: ward });
 
             const newAddress = new Address({
                 address,
@@ -14,7 +17,10 @@ const addressController = {
                 buyerName,
                 city,
                 latitude,
-                longitude
+                longitude,
+                provinceId: addressIds.provinceId,
+                districtId: addressIds.districtId,
+                wardCode: addressIds.wardCode
             });
 
             await newAddress.save();

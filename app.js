@@ -31,6 +31,7 @@ const rankRuleRoutes = require("./routes/routeRankRule");
 const visionRoutes = require("./routes/routeVision");
 const roleRoutes = require("./routes/routeRole");
 const deliveryRoutes = require("./routes/routeDelivery");
+const shippingStatusRoutes = require("./routes/routeShippingStatus");
 
 dotenv.config()
 mongoose.connect(process.env.MONGODB_URL.replace("<password>", process.env.MONGODB_PASSWORD)).then(() => {
@@ -70,6 +71,7 @@ app.use('/api/store', storeRoutes);
 app.use('/api/vision', visionRoutes);
 app.use('/api/role', roleRoutes);
 app.use('/api/delivery', deliveryRoutes);
+app.use('/api/shippingStatus', shippingStatusRoutes);
 
 
 socketSetup(server);

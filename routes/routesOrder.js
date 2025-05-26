@@ -3,7 +3,8 @@ const router = express.Router();
 const orderController = require('../controllers/orderController');
 const verifyToken = require('../middleware/verifyToken')
 
-router.post('/addOrder', verifyToken ,orderController.createOrders);
+router.post('/addOrderDirect', orderController.createDirectOrders);
+router.post('/addOrderFromCart', orderController.createProductFromCart);
 router.get('/getAllOrder', verifyToken ,orderController.getAllOrders);
 router.get('/getOrders/:id',  verifyToken ,orderController.getOrderById);
 router.get('/user/:userId', verifyToken ,orderController.getOrdersByUserId);
