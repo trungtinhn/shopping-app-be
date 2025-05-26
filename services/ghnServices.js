@@ -20,4 +20,6 @@ async function registerGHNShop(store) {
     return response.data;
 }
 
+
+
 module.exports = { registerGHNShop };

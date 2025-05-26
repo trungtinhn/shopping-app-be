@@ -9,7 +9,90 @@ const User = require('../models/User');
 const Store = require('../models/Store');
 const StorePromotion = require('../models/StorePromotion');
 const orderController = {
-    createOrders: async (req, res) => {
+    createDirectOrders: async (req, res) => {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+    
+        try {
+            const orders  = req.body; // 'orders' là danh sách các đơn hàng theo từng cửa hàng
+
+            if (!orders || orders.length === 0) {
+                return res.status(400).json({ message: 'No orders provided' });
+            }
+    
+            const createdOrders = [];
+    
+            for (const order of orders) {
+                const { storeId, userId, name, phone, address, city, district, ward, products, promotionId, storePromotionId, discount, deliveryFees, paymentMethod, totalPrice, totalProduct } = order;
+
+                const journeyLog = [{ status: 'order_created', updated_date: new Date() }];
+    
+                // Tạo đơn hàng mới
+                const newOrder = new Order({
+                    storeId,
+                    userId,
+                    name,
+                    phone,
+                    address,
+                    city,
+                    district,
+                    ward,
+                    products,
+                    promotionId,
+                    storePromotionId,
+                    ghnOrderCode: null,
+                    discount,
+                    deliveryFees,
+                    paymentMethod,
+                    totalPrice,
+                    totalProduct,
+                    status: 'Pending', // Chờ xác nhận
+                    shippingStatus: null, // Chưa gửi GHN
+                    journeyLog
+                });
+    
+                const savedOrder = await newOrder.save({ session });
+                createdOrders.push(savedOrder);
+    
+                // Trừ tồn kho
+                for (const item of products) {
+                await Product.updateOne(
+                    { _id: item.productId, 'variants.sku': item.variant.sku },
+                    { $inc: { 'variants.$.quantity': -item.quantity } },
+                    { session }
+                );
+                }
+    
+                // Cập nhật khuyến mãi (nếu có)
+                if (promotionId) {
+                    await Promotion.updateOne(
+                        { _id: promotionId },
+                        { $inc: { usageLimit: 1, remainingUses: -1 } },
+                        { session }
+                    );
+                }
+    
+                if (storePromotionId) {
+                    await StorePromotion.updateOne(
+                        { _id: storePromotionId },
+                        { $inc: { usageLimit: 1, remainingUses: -1 } },
+                        { session }
+                    );
+                }
+            }
+    
+            await session.commitTransaction();
+            session.endSession();
+    
+            res.status(200).json(createdOrders);
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+            res.status(400).json({ message: error.message });
+        }
+    },
+
+    createProductFromCart: async (req, res) => {
         const session = await mongoose.startSession();
         session.startTransaction();
     
@@ -24,6 +107,9 @@ const orderController = {
     
             for (const order of orders) {
                 const { storeId, userId, name, phone, address, products, promotionId, storePromotionId, discount, deliveryFees, paymentMethod, totalPrice, totalProduct } = order;
+
+                const journeyLog = [{ status: 'order_created', updated_date: new Date() }];
+
     
                 // Tạo đơn hàng mới
                 const newOrder = new Order({
@@ -40,25 +126,28 @@ const orderController = {
                     paymentMethod,
                     totalPrice,
                     totalProduct,
+                    status: 'Pending', // Chờ xác nhận
+                    shippingStatus: null, // Chưa gửi GHN
+                    journeyLog
                 });
     
                 const savedOrder = await newOrder.save({ session });
                 createdOrders.push(savedOrder);
     
-                // Cập nhật số lượng sản phẩm trong kho
-                for (const item of products) {
-                    await Product.updateOne(
-                        { _id: item.productId, 'Type.size': item.size, 'Type.color': item.color },
-                        { $inc: { 'Type.$.quantity': -item.quantity } },
-                        { session }
-                    );
+                // Trừ tồn kho
+                for (const item of reservation.products) {
+                await Product.updateOne(
+                    { _id: item.productId, 'variants.sku': item.sku },
+                    { $inc: { 'variants.$.quantity': -item.quantity } },
+                    { session }
+                );
                 }
     
                 // Xóa sản phẩm khỏi giỏ hàng
                 for (const item of products) {
                     await Cart.updateOne(
                         { userId },
-                        { $pull: { products: { productId: item.productId, size: item.size, color: item.color } } },
+                        { $pull: { products: { productId: item.productId, variant: item.variant } } },
                         { session }
                     );
                 }
@@ -91,6 +180,7 @@ const orderController = {
             res.status(400).json({ message: error.message });
         }
     },
+
     getAllOrders : async (req, res) => {
         try {
             const orders = await Order.find();
@@ -249,7 +339,7 @@ const orderController = {
             console.error('Error checking delivered status:', error);
             return res.status(500).json({ message: 'Internal server error' });
         }
-    }
+    },
 }
 
 module.exports = orderController

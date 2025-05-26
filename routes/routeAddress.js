@@ -3,7 +3,7 @@ const router = express.Router();
 const addressController = require('../controllers/addressController');
 const verifyToken = require('../middleware/verifyToken');
 
-router.post('/addAddress', verifyToken , addressController.addAddress);
+router.post('/addAddress', addressController.addAddress);
 router.put('/updateAddress/:id', verifyToken ,addressController.updateAddress);
 router.delete('/deleteAddress/:id', verifyToken ,addressController.deleteAddress);
 router.get('/getAddresses', verifyToken ,addressController.getAllAddresses);
