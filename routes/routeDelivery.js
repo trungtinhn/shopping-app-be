@@ -1,6 +1,7 @@
 const deliveryController = require('../controllers/deliveryController');
 const express = require('express');
 const router = express.Router();
+const verifyToken = require('../middleware/verifyToken');
 
 router.get('/calculateDelivery', verifyToken ,deliveryController.calculateShippingFee);
 router.get('/getAvailableServices', verifyToken , deliveryController.getAvailableServices);

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const globalCategoryController = require('../controllers/globalCategoryController');
+const verifyToken = require('../middleware/verifyToken');
 
 // Lấy tất cả danh mục
 router.get('/', verifyToken , globalCategoryController.getAllCategories);
