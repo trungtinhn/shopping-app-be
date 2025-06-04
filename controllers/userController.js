@@ -26,14 +26,39 @@ const userController = {
         }
     },
 
+    registerSocial: async (req, res) => {
+        try{
+            const {userId, email, fullName, userType} = req.body;
+            let  user = await User.findOne({userId});
+            if(user){
+                user.fullName = fullNam;
+                user.email = email;
+                await user.save();
+                res.status(201).json({ message: 'User registered successfully', user: user });
+            }
+            user = new User({
+                userId,
+                email,
+                fullName: fullName,
+                userType
+            });
+
+            await user.save();
+            res.status(201).json({ message: 'User registered successfully', user: user });
+        }catch(error){
+            res.status(400).json({ message: 'Failed to register user', error: error.message });
+        }
+    },
+
+
     // Lấy thông tin loại người dùng (userType) qua userId
     getUserTypeByUserId: async (req, res) => {
         try {
             const { userId } = req.params;
 
-            const user = await User.findOne({ userId }).select('userType');
+            const user = await User.findOne({ userId }).populate('userType', 'name');
             if (user) {
-                return res.status(200).json({ userType: user.userType });
+                return res.status(200).json({ userType: user.userType.name });
             } else {
                 return res.status(404).json({ message: 'User not found' });
             }

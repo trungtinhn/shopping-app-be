@@ -46,6 +46,14 @@ const promotionSchema = new mongoose.Schema({
         default: null, // Giá trị mặc định nếu không theo dõi số lượt còn lại
         min: 0,
     },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+    useAbleUserRank: {
+        type: String,
+        default: 'Đồng',
+    },
     backgroundImage: {
         type: String,
         default: null, // Đổi tên trường và tránh lỗi cú pháp `fales`
