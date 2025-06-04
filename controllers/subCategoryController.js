@@ -28,7 +28,7 @@ const subCategoryController = {
     // 📋 Lấy danh sách tất cả SubCategories
     getAll: async (req, res) => {
         try {
-        const list = await SubCategory.find().populate('globalCategoryId', 'name');
+        const list = await SubCategory.find().populate('globalCategoryId', 'name').sort({ createdAt: -1 });
         return res.status(200).json(list);
         } catch (error) {
         return res.status(500).json({ message: 'Error fetching subcategories', error });

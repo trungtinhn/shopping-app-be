@@ -3,7 +3,7 @@ const GlobalCategory = require('../models/GlobalCategory');
 const globalCategoryController = {
     getAllCategories : async (req, res) => {
         try {
-            const categories = await GlobalCategory.find();
+            const categories = await GlobalCategory.find().sort({ createdAt: -1 });
             res.status(200).json(categories);
         } catch (error) {
             res.status(500).json({ message: 'Lỗi khi lấy danh mục', error });

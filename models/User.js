@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true, // Đảm bảo userId là duy nhất
     },
-    role: {
+    userType: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Role",
         required: true,

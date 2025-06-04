@@ -40,7 +40,6 @@ const rankRuleController = {
       if (!rankRule) {
         return res.status(404).json({ message: 'Rank rule not found!' });
       }
-
       res.status(200).json({ data: rankRule });
     } catch (error) {
       res.status(500).json({
@@ -53,9 +52,9 @@ const rankRuleController = {
   // Cập nhật một quy tắc xếp hạng
   updateRankRule: async (req, res) => {
     try {
-      const { rank } = req.params;
-      const updatedRankRule = await RankRule.findOneAndUpdate(
-        { rank },
+      const id = req.params.id;
+      const updatedRankRule = await RankRule.findByIdAndUpdate(
+        id,
         req.body,
         { new: true } // Trả về bản ghi đã cập nhật
       );
@@ -79,8 +78,8 @@ const rankRuleController = {
   // Xóa một quy tắc xếp hạng
   deleteRankRule: async (req, res) => {
     try {
-      const { rank } = req.params;
-      const deletedRankRule = await RankRule.findOneAndDelete({ rank });
+      const id = req.params.id;
+      const deletedRankRule = await RankRule.findByIdAndDelete(id);
 
       if (!deletedRankRule) {
         return res.status(404).json({ message: 'Rank rule not found!' });

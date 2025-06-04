@@ -6,7 +6,7 @@ async function registerGHNShop(store) {
     const body = {
         name: store.name,
         phone: store.phoneNumber,
-        address: store.address,
+        address: store.address + ", " + store.wardName + ", " + store.districtName + ", " + store.provinceName,
         district_id: store.districtId, // bạn cần lưu thêm trường này khi tạo store
         ward_code: store.wardCode      // và trường này nữa
     };
@@ -16,7 +16,7 @@ async function registerGHNShop(store) {
             Token: GHN_TOKEN
         }
     });
-
+    
     return response.data;
 }
 

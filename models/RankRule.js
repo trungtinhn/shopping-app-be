@@ -26,6 +26,11 @@ const rankRuleSchema = new mongoose.Schema({
         default: '', // Mô tả về quy tắc
         trim: true,
     },
+    color: {
+        type: String,
+        default: '#000000', // Mẫu của quy tắc mặc định là đen
+        trim: true,
+    },
 }, { timestamps: true }); // Tự động thêm createdAt và updatedAt
 
 module.exports = mongoose.model('RankRule', rankRuleSchema);

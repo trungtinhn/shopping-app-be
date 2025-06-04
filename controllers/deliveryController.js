@@ -200,7 +200,8 @@ const ghnController = {
     },
 
     getDistricts : async (req, res) => {
-        const { provinceId } = req.body;
+        let { provinceId } = req.query;
+        provinceId = parseInt(provinceId, 10);
         try {
             const response = await ghnAPI.post(`/master-data/district`, {
                 province_id: provinceId
@@ -216,8 +217,8 @@ const ghnController = {
     },
 
     getWards : async (req, res) => {
-        const { districtId } = req.body;
-        console.log(districtId);
+        let { districtId } = req.query;
+        districtId = parseInt(districtId, 10);
         try {
             const response = await ghnAPI.post(`/master-data/ward?district_id`, {
                 district_id: districtId
