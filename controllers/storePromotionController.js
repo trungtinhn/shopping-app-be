@@ -15,11 +15,48 @@ const storePromotionController = {
         .json({message: 'Error creating promotion', error: error.message});
     }
   },
+  deletePromotion: async (req, res) => {
+    const {id} = req.params;
+    try {
+      const deletedPromotion = await StorePromotion.findByIdAndDelete(id);
+      if (!deletedPromotion) {
+        return res
+          .status(404)
+          .json({message: 'Promotion not found or already deleted!'});
+      }
+      res.status(200).json({
+        message: 'Promotion deleted successfully',
+        data: deletedPromotion,
+      });
+    } catch (error) {
+      res.status(500).json({message: 'Failed to delete promotion!', error});
+    }
+  },
+  updatePromotion: async (req, res) => {
+    const {id} = req.params;
+    try {
+      const updatedPromotion = await StorePromotion.findByIdAndUpdate(
+        id,
+        req.body,
+        {new: true}
+      );
+      if (!updatedPromotion) {
+        return res
+          .status(404)
+          .json({message: 'Promotion not found or already deleted!'});
+      }
+      res.status(200).json({
+        message: 'Promotion updated successfully',
+        data: updatedPromotion,
+      });
+    } catch (error) {
+      res.status(500).json({message: 'Failed to update promotion!', error});
+    }
+  },
   getBystoreId: async (req, res) => {
     const {storeId} = req.params;
-
     try {
-      const promotions = await StorePromotion.find({storeId, isActive: true});
+      const promotions = await StorePromotion.find({ storeId });
       res.status(200).json({success: true, promotions});
     } catch (error) {
       res
@@ -55,7 +92,28 @@ const storePromotionController = {
         .json({message: 'Failed to get current promotions!', error});
     }
   },
-
+  updatePromotionStatus: async (req, res) => {
+    const {id} = req.params;
+    const {isActive} = req.body;
+    try {
+      const updatedPromotion = await StorePromotion.findByIdAndUpdate(
+        id,
+        {isActive},
+        {new: true}
+      );
+      if (!updatedPromotion) {
+        return res
+          .status(404)
+          .json({message: 'Promotion not found or already deleted!'});
+      }
+      res.status(200).json({
+        message: 'Promotion status updated successfully',
+        data: updatedPromotion,
+      });
+    } catch (error) {
+      res.status(500).json({message: 'Failed to update promotion status!', error});
+    }
+  },
   checkPromotion: async (req, res) => {
     try {
       const {id} = req.params;

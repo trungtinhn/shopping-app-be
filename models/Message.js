@@ -14,6 +14,11 @@ const messageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  messageType: {
+    type: String,
+    enum: ["text", "image"],
+    default: "text",
+  },
   isSeen: {
     type: Boolean,
     default: false,

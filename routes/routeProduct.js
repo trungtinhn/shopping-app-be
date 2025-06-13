@@ -22,4 +22,6 @@ router.get('/products/store/:storeId', verifyToken, productController.getProduct
 
 router.get('/products/store/:storeId/status/:status', verifyToken, productController.getProductsByStatusAndStoreId);
 
+router.patch('/products/:productId/image-moderation', verifyToken, productController.updateImageModerationStatus);
+
 module.exports = router;
