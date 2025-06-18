@@ -3,7 +3,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const verifyToken = require('../middleware/verifyToken')
 
-router.post('/register', verifyToken, userController.registerEmailPassword);
+router.post('/register', userController.registerEmailPassword);
 router.get('/:userId', verifyToken, userController.getUserTypeByUserId);
 router.put('/:userId', verifyToken, userController.updateUser);
 router.delete('/:userId', verifyToken, userController.deleteUser);

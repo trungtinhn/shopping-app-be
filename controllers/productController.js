@@ -185,7 +185,7 @@ const productController = {
 
   getProductsByStatusAndStoreId: async (req, res) => {
     try {
-      const { storeId, status } = req.body; // Lấy storeId và status từ body
+      const { storeId, status } = req.params; // Lấy storeId và status từ body
       if (!storeId || !status) {
         return res
           .status(400)
