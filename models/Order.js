@@ -11,7 +11,7 @@ const OrderProductSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
   variant: {
-    sku: { type: String }, // Mã định danh biến thể
+    _id: { type: mongoose.Schema.Types.ObjectId, required: true },
     attributes: [
       {
         name: { type: String, required: true },
@@ -39,8 +39,6 @@ const OrderSchema = new mongoose.Schema({
   city: { type: String, required: true },
   district: { type: String, required: true },
   ward: { type: String, required: true },
-
-
 
   promotionId: {
     type: mongoose.Schema.Types.ObjectId,

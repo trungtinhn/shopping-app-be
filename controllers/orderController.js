@@ -106,10 +106,9 @@ const orderController = {
             const createdOrders = [];
     
             for (const order of orders) {
-                const { storeId, userId, name, phone, address, products, promotionId, storePromotionId, discount, deliveryFees, paymentMethod, totalPrice, totalProduct } = order;
+                 const { storeId, userId, name, phone, address, city, district, ward, products, promotionId, storePromotionId, discount, deliveryFees, paymentMethod, totalPrice, totalProduct } = order;
 
                 const journeyLog = [{ status: 'order_created', updated_date: new Date() }];
-
     
                 // Tạo đơn hàng mới
                 const newOrder = new Order({
@@ -118,9 +117,13 @@ const orderController = {
                     name,
                     phone,
                     address,
+                    city,
+                    district,
+                    ward,
                     products,
                     promotionId,
                     storePromotionId,
+                    ghnOrderCode: null,
                     discount,
                     deliveryFees,
                     paymentMethod,
@@ -134,24 +137,32 @@ const orderController = {
                 const savedOrder = await newOrder.save({ session });
                 createdOrders.push(savedOrder);
     
+                // // Trừ tồn kho
+                // for (const item of reservation.products) {
+                //     console.log(item.variant._id);
+                // await Product.updateOne(
+                //     { _id: item.productId, 'variants._id': item.variant._id },
+                //     { $inc: { 'variants.$.quantity': -item.quantity } },
+                //     { session }
+                // );
+                // }
+
                 // Trừ tồn kho
-                for (const item of reservation.products) {
-                await Product.updateOne(
-                    { _id: item.productId, 'variants.sku': item.sku },
-                    { $inc: { 'variants.$.quantity': -item.quantity } },
-                    { session }
-                );
+                for (const item of products) {
+                    await Product.updateOne(
+                        { _id: item.productId, 'variants._id': item.variant._id },
+                        { $inc: { 'variants.$.quantity': -item.quantity } },
+                        { session }
+                    );
                 }
-    
                 // Xóa sản phẩm khỏi giỏ hàng
                 for (const item of products) {
                     await Cart.updateOne(
                         { userId },
-                        { $pull: { products: { productId: item.productId, variant: item.variant } } },
+                        { $pull: { products: { productId: item.productId, variantId: item.variant._id } } },
                         { session }
                     );
                 }
-    
                 // Cập nhật khuyến mãi (nếu có)
                 if (promotionId) {
                     await Promotion.updateOne(
@@ -159,12 +170,11 @@ const orderController = {
                         { $inc: { usageLimit: 1, remainingUses: -1 } },
                         { session }
                     );
-                }
-    
+                }    
                 if (storePromotionId) {
                     await StorePromotion.updateOne(
                         { _id: storePromotionId },
-                        { $inc: { usageLimit: 1, remainingUses: -1 } },
+                        { $inc: { quantityAvailable: -1, } },
                         { session }
                     );
                 }
@@ -214,13 +224,13 @@ const orderController = {
                                       .sort({ createdAt: -1 }) // Sort orders by creation date, newest first
                                       .lean();
 
-            console.log(orders);
 
             const ordersWithShopDetails = await Promise.all(orders.map(async (order) => {
                 const store = await Store.findById(order.storeId);
                 if (store) {
                     order.nameStore = store.name;
                     order.avatar = store.image;
+                    order.provinceName = store.provinceName;
                 } else {
                     // Handle case where user is not found
                     order.name = 'Unknown';
@@ -240,8 +250,9 @@ const orderController = {
             const ordersWithShopDetails = await Promise.all(orders.map(async (order) => {
                 const store = await Store.findById(order.storeId);
                 if (store) {
-                    order.name = store.name;
-                    order.avatar = store.avatar;
+                    order.nameStore = store.name;
+                    order.avatar = store.image;
+                    order.provinceName = store.provinceName;
                 } else {
                     // Handle case where user is not found
                     order.name = 'Unknown';
@@ -299,16 +310,16 @@ const orderController = {
             const orders = await Order.find({ status: req.params.status }).lean();
 
             const ordersWithUserDetails = await Promise.all(orders.map(async (order) => {
-                const user = await User.findOne({ userId: order.userId });
-                if (user) {
-                    order.TenND = user.TenND;
-                    order.Avatar = user.Avatar;
+                const store = await Store.findById(order.storeId);
+                if (store) {
+                    order.nameStore = store.name;
+                    order.avatar = store.image;
+                    order.provinceName = store.provinceName;
                 } else {
                     // Handle case where user is not found
-                    order.TenND = 'Unknown';
-                    order.Avatar = ''; // Provide a default image if necessary
+                    order.name = 'Unknown';
+                    order.avatar = ''; // Provide a default image if necessary
                 }
-                return order;
             }));
 
             res.json(ordersWithUserDetails);

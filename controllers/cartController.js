@@ -14,6 +14,10 @@ const cartController = {
         attributes,
         quantity,
         price,
+        weight,
+        height,
+        length,
+        width
       } = req.body;
 
       const totalPrice = price * quantity;
@@ -27,8 +31,6 @@ const cartController = {
             productId,
             variantId,
             storeId,
-            name,
-            image,
             attributes,
             quantity,
             price,
@@ -102,7 +104,7 @@ const cartController = {
   // Xóa sản phẩm khỏi giỏ hàng
   removeProductFromCart: async (req, res) => {
     try {
-      const { userId, variantId } = req.body;
+      const { userId, productId, variantId } = req.body;
 
       let cart = await Cart.findOne({ userId });
 
@@ -110,8 +112,9 @@ const cartController = {
         return res.status(404).json({ message: 'Cart not found' });
       }
 
-      const productIndex = cart.products.findIndex(
-        (product) => product.variantId.toString() === variantId
+      const productIndex = cart.products.findIndex((product) =>
+        product.productId.toString() === productId &&
+        product.variantId.toString() === variantId
       );
 
       if (productIndex === -1) {
@@ -126,6 +129,7 @@ const cartController = {
       res.status(500).json({ message: 'Failed to remove product from cart!', error });
     }
   },
+
 
   // Xóa toàn bộ giỏ hàng
   clearCart: async (req, res) => {
@@ -156,11 +160,11 @@ const cartController = {
       const cart = await Cart.findOne({ userId }).populate([
         {
           path: 'products.productId',
-          select: 'name image price',
+          select: 'name image weight height length width',
         },
         {
           path: 'products.storeId',
-          select: 'name image',
+          select: 'name image provinceName',
         },
       ]);
 
