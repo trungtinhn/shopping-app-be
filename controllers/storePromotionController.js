@@ -74,22 +74,26 @@ const storePromotionController = {
   },
   getPromotionCurrent: async (req, res) => {
     try {
+      const { storeId } = req.query;
       const currentDate = new Date();
+
       const promotions = await StorePromotion.find({
-        startDate: {$lte: currentDate},
-        endDate: {$gte: currentDate},
-        remainingUses: {$gt: 0},
+        storeId,
+        startDate: { $lte: currentDate },
+        endDate: { $gte: currentDate },
+        quantityAvailable: { $gt: 0 },
+        isActive: true,
       });
 
       if (!promotions.length) {
-        return res.status(404).json({message: 'No current promotions found!'});
+        return res.status(404).json({ message: 'No current promotions found!' });
       }
 
-      res.status(200).json({data: promotions});
+      res.status(200).json({ data: promotions });
     } catch (error) {
       res
         .status(500)
-        .json({message: 'Failed to get current promotions!', error});
+        .json({ message: 'Failed to get current promotions!', error });
     }
   },
   updatePromotionStatus: async (req, res) => {

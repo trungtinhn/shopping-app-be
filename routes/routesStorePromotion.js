@@ -22,7 +22,7 @@ router.get('/store/:storeId', verifyToken, storePromotionController.getBystoreId
 router.get('/all', verifyToken, storePromotionController.getAllPromotions);
 
 // Lấy danh sách khuyến mãi hiện tại
-router.get('/current', verifyToken, storePromotionController.getPromotionCurrent);
+router.get('/current', storePromotionController.getPromotionCurrent);
 
 // Kiểm tra khuyến mãi theo ID
 router.get('/check/:id', verifyToken, storePromotionController.checkPromotion);

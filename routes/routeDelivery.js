@@ -3,9 +3,9 @@ const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken');
 
-router.get('/calculateDelivery', verifyToken ,deliveryController.calculateShippingFee);
+router.post('/calculateDelivery', deliveryController.calculateShippingFee);
 router.get('/getAvailableServices', verifyToken , deliveryController.getAvailableServices);
-router.get('/estimateDeliveryTime', verifyToken , deliveryController.estimateDeliveryTime);
+router.post('/estimateDeliveryTime' , deliveryController.estimateDeliveryTime);
 router.get('/getProvinces', verifyToken , deliveryController.getProvinces);
 router.get('/getDistricts', deliveryController.getDistricts);
 router.get('/getWards', verifyToken , deliveryController.getWards);
