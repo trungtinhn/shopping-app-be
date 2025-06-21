@@ -24,7 +24,7 @@ const categorySchema = new mongoose.Schema({
     },
     subCategoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'SubCategory' // Liên kết với danh mục toàn cục
+        ref: 'SubCategory' // Liên kết với danh mục bậc hai
     },
 }, {timestamps: true})
 

@@ -6,6 +6,15 @@ const verifyToken = require('../middleware/verifyToken');
 // Tạo mới một khuyến mãi
 router.post('/', verifyToken, storePromotionController.createstorePromotion);
 
+// Xóa khuyến mãi theo ID
+router.delete('/:id', verifyToken, storePromotionController.deletePromotion);
+
+// Cập nhật khuyến mãi theo ID
+router.put('/:id', verifyToken, storePromotionController.updatePromotion);
+
+//Cập nhật trạng thái khuyến mãi theo ID
+router.put('/status/:id', verifyToken, storePromotionController.updatePromotionStatus);
+
 // Lấy danh sách khuyến mãi theo storeId
 router.get('/store/:storeId', verifyToken, storePromotionController.getBystoreId);
 
