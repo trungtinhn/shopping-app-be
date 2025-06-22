@@ -48,7 +48,8 @@ const orderController = {
                     totalProduct,
                     status: 'Pending', // Chờ xác nhận
                     shippingStatus: null, // Chưa gửi GHN
-                    journeyLog
+                    journeyLog,
+                    isRating: false
                 });
     
                 const savedOrder = await newOrder.save({ session });
@@ -131,7 +132,8 @@ const orderController = {
                     totalProduct,
                     status: 'Pending', // Chờ xác nhận
                     shippingStatus: null, // Chưa gửi GHN
-                    journeyLog
+                    journeyLog,
+                    isRating: false
                 });
     
                 const savedOrder = await newOrder.save({ session });

@@ -80,7 +80,11 @@ const OrderSchema = new mongoose.Schema({
       status: { type: String, required: true }, // Trạng thái từ GHN
       updated_date: { type: Date, required: true }, // Thời gian cập nhật
     }
-  ]
+  ],
+  isRating: {
+    type: Boolean,
+    default: false
+  },
 
 }, { timestamps: true });
 
