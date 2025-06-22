@@ -5,7 +5,7 @@ const RoleSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true, // e.g., 'admin_add', 'admin_shop'
+    unique: true, // e.g., 'admin_app', 'admin_shop'
   },
   displayName: {
     type: String,
@@ -15,6 +15,11 @@ const RoleSchema = new mongoose.Schema({
     type: [String], // e.g., ['create_user', 'delete_user', 'view_report']
     default: [],
   },
+  storeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+    default: "",
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Role", RoleSchema);

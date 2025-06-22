@@ -18,4 +18,10 @@ router.put('/:id', verifyToken, roleController.update);
 // Xoá role
 router.delete('/:id', verifyToken, roleController.delete);
 
+//Lấy role staff của cửa hàng
+router.get('/staff-role/:storeId', verifyToken, roleController.getStaffRole);
+
+//Kiểm tra cửa hàng có bảng role chưa
+router.get('/check-staff-role/:storeId', verifyToken, roleController.checkStaffRole);
+
 module.exports = router;
