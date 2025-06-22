@@ -67,7 +67,6 @@ const productController = {
   getProductTrending: async (req, res) => {
     try {
       const products = await Product.find({
-        trending: true,
         status: "available",
       });
       res.status(200).json(products);
@@ -81,7 +80,7 @@ const productController = {
   getProductOnSale: async (req, res) => {
     try {
       const products = await Product.find({
-        onsale: true,
+        isOnSale: true,
         status: "available",
       });
       res.status(200).json(products);
@@ -94,7 +93,6 @@ const productController = {
 
   getProductByCategory: async (req, res) => {
     try {
-      console.log("CategoryId:", req.params.categoryId);
       const products = await Product.find({
         categoryId: req.params.categoryId,
         status: "available",
@@ -109,10 +107,13 @@ const productController = {
     }
   },
 
-  getProductByGlobalCategory: async (req, res) => {
+  getProductBySubCategory: async (req, res) => {
     try {
+      const subCategoryId = req.params.subCategoryId;
+      const categories = await Category.find({ subCategoryId });
+      const categoryIds = categories.map((cat) => cat._id);
       const products = await Product.find({
-        globalCategoryId: req.params.globalCategoryId,
+        categoryId: { $in: categoryIds },
         status: "available",
       });
       res.status(200).json(products);

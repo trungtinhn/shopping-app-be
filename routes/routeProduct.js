@@ -11,17 +11,13 @@ router.get('/getProduct/id=:id', verifyToken ,productController.getProductById);
 router.get('/getProductTrending', verifyToken ,productController.getProductTrending);
 router.get('/getProductOnsale', verifyToken ,productController.getProductOnSale);
 router.get('/getProductByCategory/:categoryId', verifyToken ,productController.getProductByCategory);
-router.get('/getProductByGlobalCategory/:globalCategoryId', verifyToken ,productController.getProductByGlobalCategory);
+router.get('/getProductBySubCategory/:subCategoryId', verifyToken ,productController.getProductBySubCategory);
 router.get('/getProducts/status/:status', verifyToken, productController.getProductsByStatus);
 router.put('/setProductStatus/status/:id',verifyToken, productController.setProductStatus);
 router.put('/checkAvailable', verifyToken ,productController.checkAvailability);
-
 router.get('/getProductAvailable', verifyToken ,productController.getProductAvailable);
-
 router.get('/products/store/:storeId', verifyToken, productController.getProductsByStoreId);
-
 router.get('/products/store/:storeId/status/:status', verifyToken, productController.getProductsByStatusAndStoreId);
-
 router.patch('/products/:productId/image-moderation', verifyToken, productController.updateImageModerationStatus);
 
 module.exports = router;
