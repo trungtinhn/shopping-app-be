@@ -39,6 +39,9 @@ const OrderSchema = new mongoose.Schema({
   city: { type: String, required: true },
   district: { type: String, required: true },
   ward: { type: String, required: true },
+  longitude: { type: Number, required: true },
+  latitude: { type: Number, required: true },
+  estimatedDate: { type: String},
 
   promotionId: {
     type: mongoose.Schema.Types.ObjectId,

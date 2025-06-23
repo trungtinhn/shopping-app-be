@@ -7,9 +7,9 @@ const knnRecommend = {
     knnRecommendLike: async (req, res) => {
         try {
             const { userId } = req.params; // Sửa lỗi cú pháp
-            console.log(userId);
+            //console.log(userId);
             const userLikes = await Like.findOne({ userId: userId }).populate('productList');
-            console.log(userLikes);
+            //console.log(userLikes);
         
             if (!userLikes || !userLikes.productList.length) {
               return res.status(404).json({ message: 'Không tìm thấy sản phẩm nào trong danh sách yêu thích của người dùng này' });

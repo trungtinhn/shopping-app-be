@@ -1,10 +1,29 @@
 const Review = require('../models/Review');
+const Product = require('../models/Product');
 const reviewController = {
     // Thêm mới đánh giá
     addReview: async (req, res) => {
         try {
+            const { rating, productId } = req.body;
+
+            // 1. Tạo review mới
             const newReview = new Review(req.body);
             await newReview.save();
+
+            // 2. Tính lại trung bình rating và số lượng review
+            const reviews = await Review.find({ productId });
+
+            const totalRatings = reviews.reduce((sum, r) => sum + r.rating, 0);
+            const reviewCount = reviews.length;
+            const averageRating = Math.round((totalRatings / reviewCount) * 10) / 10; // Làm tròn 1 chữ số thập phân
+
+            // 3. Cập nhật lại product
+            await Product.findByIdAndUpdate(productId, {
+            rating: averageRating,
+            reviewCount: reviewCount,
+            });
+
+            // 4. Trả về kết quả
             res.status(200).json({ message: 'Created new review successfully!' });
         } catch (error) {
             res.status(500).json({ message: 'Failed to create new review!', error });

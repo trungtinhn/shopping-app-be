@@ -97,7 +97,6 @@ const productController = {
         categoryId: req.params.categoryId,
         status: "available",
       });
-      console.log("Products:", products);
       res.status(200).json(products);
     } catch (error) {
       console.error("Error:", error);
@@ -162,9 +161,7 @@ const productController = {
 
   getProductsByStoreId: async (req, res) => {
     try {
-      console.log("req.params: ");
       const { storeId } = req.params; // Lấy storeId từ params
-      console.log(storeId);
       if (!storeId) {
         return res.status(400).json({ message: "Store ID is required!" });
       }

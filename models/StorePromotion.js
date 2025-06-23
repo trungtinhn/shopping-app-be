@@ -16,20 +16,13 @@ const storePromotionSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-    discountRate: {
+    discount: {
         type: Number,
         default: 0,
-        min: 0,
-        max: 100,
     },
     minimumOrderValue: {
         type: Number,
         default: 0,
-        min: 0,
-    },
-    maxDiscount: { // Thêm trường giảm tối đa
-        type: Number,
-        default: null,
         min: 0,
     },
     promotionImage: {
@@ -39,11 +32,6 @@ const storePromotionSchema = new mongoose.Schema({
     quantityAvailable: {
         type: Number,
         default: 0,
-        min: 0,
-    },
-    usageLimitPerUser: {
-        type: Number,
-        default: null,
         min: 0,
     },
     totalRemainingUses: {

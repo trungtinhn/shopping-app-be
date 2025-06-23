@@ -6,8 +6,7 @@ const reviewSchema = new mongoose.Schema({
         default: [], // Mặc định là mảng rỗng nếu không có hình ảnh
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Tham chiếu đến bảng User
+        type: String,
         required: true,
     },
     productId: {
@@ -37,7 +36,7 @@ const reviewSchema = new mongoose.Schema({
         default: null, // Giá trị mặc định là null nếu không liên quan tới cửa hàng
     },
     variant: {
-        sku: { type: String }, // Mã định danh biến thể
+        _id: { type: mongoose.Schema.Types.ObjectId, required: true },
         attributes: [
           {
             name: { type: String, required: true },
