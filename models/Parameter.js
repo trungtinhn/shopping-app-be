@@ -2,11 +2,7 @@ const mongoose = require('mongoose');
 
 // Định nghĩa Schema cho bảng tham số
 const parameterSchema = new mongoose.Schema({
-  comissonFee: {
-    type: Number,
-    required: true
-  },
-  minimumQuantity: {
+  commissonFee: {
     type: Number,
     required: true
   }

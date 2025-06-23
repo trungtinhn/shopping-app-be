@@ -9,5 +9,5 @@ router.delete('/:id', verifyToken , categoryController.deleteCategory),
 router.get('/getCategory', verifyToken ,categoryController.getCategory),
 router.put('/updateProductAmount/:id', verifyToken ,categoryController.updateProductAmountInCategory),
 router.get('/getCategoriesByStoreId/:storeId', verifyToken ,categoryController.getCategoriesByStore),
-
+router.get('/:id', verifyToken ,categoryController.getCategoryById),
 module.exports = router
