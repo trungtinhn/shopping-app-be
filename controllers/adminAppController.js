@@ -43,13 +43,13 @@ const adminAppController = {
               {
                 $match: {
                   createdAt: { $gte: dayStart, $lte: dayEnd },
-                  status: "completed", // Assuming only completed orders count towards revenue
+                  status: "Completed", // Assuming only completed orders count towards revenue
                 },
               },
               {
                 $group: {
                   _id: null,
-                  total: { $sum: "$totalAmount" }, // Assuming totalAmount field in Order
+                  total: { $sum: "$totalPrice" }, // Assuming totalAmount field in Order
                 },
               },
             ]),

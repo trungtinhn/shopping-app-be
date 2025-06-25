@@ -50,6 +50,10 @@ const UserSchema = new mongoose.Schema(
       ref: "Store",
       default: null,
     },
+    isActive: {
+      type: Boolean,
+      default: true, 
+    },
   },
   { timestamps: true }
 );

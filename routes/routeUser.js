@@ -10,4 +10,6 @@ router.delete('/:userId', verifyToken, userController.deleteUser);
 router.get('/getUser/:userId', verifyToken, userController.getCurrentUserData);
 router.get('/users', verifyToken, userController.getAllUsers);
 router.post('/registerSocial', verifyToken, userController.registerSocial);
+router.get('/staff/:storeId', verifyToken, userController.getStaffsByStoreId);
+router.post('/staff', verifyToken, userController.createEmployee);
 module.exports = router;
