@@ -129,6 +129,18 @@ const userController = {
             return res.status(500).json({ message: error.message });
         }
     },
+
+    updateFCMToken: async (req, res) => {
+        try {
+            const { userId, fcmToken } = req.body;
+            
+            await User.findOneAndUpdate({ userId }, { fcmToken });
+            
+            res.status(200).json({ message: 'FCM token updated successfully' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error updating FCM token' });
+        }
+    }
 };
 
 module.exports = userController;

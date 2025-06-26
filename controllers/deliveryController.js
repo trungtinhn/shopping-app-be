@@ -2,6 +2,7 @@ const axios = require('axios');
 const Order = require('../models/Order'); // Update path if needed
 const Store = require('../models/Store');
 const { updateOrderStatusesGHN } = require('../services/ghnSyncOrder');
+const NotificationService = require('../services/notificationService');
 const GHN_TOKEN = process.env.GHN_API_KEY;
 const GHN_API_BASE_URL = process.env.GHN_API_BASE_URL;
 const ghnAPI = axios.create({
@@ -109,10 +110,47 @@ const ghnController = {
                 $push: { journeyLog: journeyLog }
             });
 
+            // Gửi push notification
+            try {
+                await NotificationService.sendToUser(
+                    order.userId,
+                    "Đơn hàng đã được xác nhận",
+                    "Đơn hàng của bạn đã được xác nhận, cửa hàng đang chuẩn bị hàng. Vui lòng kiểm tra thời gian nhận hàng.",
+                    {
+                        type: 'order_confirmed',
+                        orderId: order._id.toString(),
+                        orderCode: response.data.data.order_code
+                    }
+                );
+            } catch (notificationError) {
+                console.error('Error sending push notification:', notificationError);
+                // Không throw error để không ảnh hưởng đến flow chính
+            }
+
             res.json(response.data.data);
         } catch (error) {
             res.status(500).json({ message: error.response?.data?.message || 'Lỗi tạo đơn GHN' });
         }
+    },
+
+    testNofi: async (req, res) => {
+        try {
+            const {userId} = req.params;
+                await NotificationService.sendToUser(
+                    userId,
+                    "Đơn hàng đã được xác nhận",
+                    "Đơn hàng của bạn đã được xác nhận, cửa hàng đang chuẩn bị hàng. Vui lòng kiểm tra thời gian nhận hàng.",
+                    {
+                        type: 'order_confirmed',
+                        orderId: 'ferugjrfgrjnhn',
+                        orderCode: 'hgvvvvvb vb'
+                    }
+                );
+            } catch (notificationError) {
+                console.error('Error sending push notification:', notificationError);
+                // Không throw error để không ảnh hưởng đến flow chính
+            }
+        res.json('OK');    
     },
 
     // 4. Lấy trạng thái đơn GHN

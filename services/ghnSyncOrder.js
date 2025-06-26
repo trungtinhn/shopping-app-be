@@ -4,6 +4,10 @@ const axios = require('axios');
 
 // Model Order
 const Order = require('../models/Order');
+const Product = require('../models/Product');
+
+// Câu hình
+const GHN_API_URL = process.env.GHN_API_BASE_URL;
 const GHN_API_BASE_URL = process.env.GHN_API_BASE_URL;
 const GHN_TOKEN = process.env.GHN_API_KEY;
 
@@ -61,21 +65,18 @@ const processOrder = async (order) => {
         if (ghnData) {
             const { status, shippingStatus } = mapGHNStatusToInternal(ghnData.status);
             
-            // Lấy tất cả log từ GHN và chuyển thành định dạng journeyLog
             const ghnLogs = ghnData.log || [];
             const existingLogs = order.journeyLog || [];
-            
-            // Tạo key để so sánh - chuẩn hóa format ngày
+
             const createLogKey = (status, dateStr) => {
                 const date = new Date(dateStr);
                 return `${status}|${date.toISOString()}`;
             };
-            
-            const existingLogKeys = existingLogs.map(log => 
+
+            const existingLogKeys = existingLogs.map(log =>
                 createLogKey(log.status, log.updated_date)
             );
 
-            // Lọc các log mới
             const newLogs = ghnLogs
                 .filter(log => {
                     const logKey = createLogKey(log.status, log.updated_date);
@@ -86,6 +87,7 @@ const processOrder = async (order) => {
                     updated_date: new Date(log.updated_date)
                 }));
 
+            // Cập nhật đơn hàng
             await Order.updateOne(
                 { _id: order._id },
                 {
@@ -99,6 +101,16 @@ const processOrder = async (order) => {
                     }
                 }
             );
+
+            // ✅ Nếu đơn hàng mới chuyển sang "Completed" thì cập nhật soldQuantity
+            if (status === "Completed" && order.status !== "Completed") {
+                for (const product of order.products) {
+                    await Product.updateOne(
+                        { _id: product.productId },
+                        { $inc: { soldQuantity: product.quantity } }
+                    );
+                }
+            }
         }
     } catch (error) {
         console.error(`Lỗi khi xử lý đơn hàng ${order._id}:`, error.message);

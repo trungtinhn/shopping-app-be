@@ -10,5 +10,5 @@ router.delete('/:userId', verifyToken, userController.deleteUser);
 router.get('/getUser/:userId', verifyToken, userController.getCurrentUserData);
 router.get('/users', verifyToken, userController.getAllUsers);
 router.post('/registerSocial', verifyToken, userController.registerSocial);
-
+router.post('/updateFCMToken', verifyToken, userController.updateFCMToken);
 module.exports = router;

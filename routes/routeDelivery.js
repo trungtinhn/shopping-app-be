@@ -11,4 +11,5 @@ router.get('/getDistricts', deliveryController.getDistricts);
 router.get('/getWards', verifyToken , deliveryController.getWards);
 router.patch('/confirmDelivery/:id', deliveryController.createGHNOrder);
 router.get('/getGHNOrder/:id', deliveryController.getGHNOrderStatus);
+router.get('/testNofi/:userId', deliveryController.testNofi);
 module.exports = router;

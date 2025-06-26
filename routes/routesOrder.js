@@ -19,4 +19,5 @@ router.patch('/:orderId/rating', verifyToken ,orderController.updateOrderRatingS
 router.get('/getOrderDetailById/:orderId', verifyToken ,orderController.getOrderDetailById);
 router.get('/getOrderDetailByShop/:orderId', orderController.getOrderDetailByShop);
 router.get('/getOrderDetailByAdmin/:orderId', orderController.getOrderDetailByAdmin);
+
 module.exports = router;
