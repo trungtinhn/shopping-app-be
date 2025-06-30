@@ -283,6 +283,34 @@ const userController = {
       return res.status(500).json({ message: error.message });
     }
   },
+  updateStoreId: async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { storeId } = req.body;
+
+    if (!storeId) {
+      return res.status(400).json({ message: "Thiếu storeId trong yêu cầu." });
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { storeId } },
+      { new: true, runValidators: true }
+    );
+
+    if (updatedUser) {
+      return res.status(200).json({
+        message: "Cập nhật storeId thành công.",
+        user: updatedUser,
+      });
+    } else {
+      return res.status(404).json({ message: "Không tìm thấy người dùng." });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+},
 };
+
 
 module.exports = userController;

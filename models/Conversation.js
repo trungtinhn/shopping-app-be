@@ -26,7 +26,7 @@ const ConversationSchema = new mongoose.Schema({
         shop: { type: Number, default: 0 }
     },
     
-    // Trạng thái conversation
+    // Trạng thái conversation  
     status: {
         type: String,
         enum: ['active', 'archived', 'blocked'],
