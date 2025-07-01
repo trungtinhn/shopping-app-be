@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const agenda = require("../services/agenda");
+const Category = require("../models/Category");
 const productController = {
   addProduct: async (req, res) => {
     try {
