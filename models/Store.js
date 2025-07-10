@@ -37,7 +37,7 @@ const storeSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'pending', 'suspended'],
+      enum: ['active', 'pending', 'suspended, rejected'],
       default: 'pending',
     },
     ownerId: {

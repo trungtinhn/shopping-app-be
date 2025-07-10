@@ -49,6 +49,50 @@ const knnRecommend = {
             //return await this.fallbackRecommendLike(req, res);
         }
     },
+
+    knnRecommendSimilar: async (req, res) => {
+        try {
+            const { productId } = req.params;
+            console.log(productId);
+            
+            // Gọi Python service
+            const response = await axios.post(`${PYTHON_SERVICE_URL}/similar`, {
+                product_id: productId,
+                n_similar: 6
+            }, {
+                timeout: 30000, // 30 seconds timeout
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const recommendedProductIds = response.data.similar_ids;
+            
+            if (!recommendedProductIds || !recommendedProductIds.length) {
+                return res.status(404).json({ 
+                    message: 'Không tìm thấy sản phẩm gợi ý nào cho người dùng này' 
+                });
+            }
+            
+            // Lấy thông tin chi tiết của các sản phẩm được gợi ý
+            const recommendedProducts = await Product.find({
+                '_id': { $in: recommendedProductIds }
+            });
+            
+            return res.status(200).json({
+                success: true,
+                count: recommendedProducts.length,
+                recommendations: recommendedProducts
+            });
+            
+        } catch (error) {
+            console.error('Lỗi khi gọi Python recommendation service:', error.message);
+            
+            // Fallback: Sử dụng logic cũ nếu Python service không hoạt động
+            //return await this.fallbackRecommendLike(req, res);
+        }
+    },
+
     
     // // Fallback method sử dụng logic cũ
     // fallbackRecommendLike: async (req, res) => {

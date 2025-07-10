@@ -64,13 +64,13 @@ const ProductSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ['available', 'outofstock', 'onwait'],
+    enum: ['available', 'outofstock', 'onwait', 'rejected', 'hide'],
     default: 'available'
   },
   imageModerationStatus: {
-  type: String,
-  enum: ['safe', 'unsafe', 'unchecked'],
-  default: 'unchecked',
+    type: String,
+    enum: ['safe', 'unsafe', 'unchecked'],
+    default: 'unchecked',
   },
   imageModerationNote: {
     type: String,

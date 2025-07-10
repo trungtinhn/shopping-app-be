@@ -3,7 +3,7 @@ const keywordParser = require('../helpers/keywordParser');
 
 const createPrompt = () => {
     return `
-Hãy xem ảnh sản phẩm này và tạo ra danh sách từ khóa để tìm kiếm sản phẩm tương tự.
+Hãy xem các sản phẩm có trong ảnh này và tạo ra danh sách từ khóa để tìm kiếm sản phẩm tương tự.
 
 Yêu cầu:
 - Trả về 8-10 từ khóa ngắn gọn và chính xác
