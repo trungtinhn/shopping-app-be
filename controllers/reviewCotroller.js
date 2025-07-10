@@ -69,7 +69,7 @@ const reviewController = {
         .populate("userId", "fullName avatar")
         .populate("productId", "productName basePrice")
         .populate('storeId', 'name') // Nếu có Store model
-        .lean();;
+        .lean()
       res.status(200).json(reviews);
     } catch (error) {
       res.status(500).json({ message: "Failed to get reviews!", error });
@@ -108,5 +108,6 @@ const reviewController = {
             res.status(500).json({ message: 'Failed to get reviews!', error });
         }
     },
+}
 
 module.exports = reviewController;

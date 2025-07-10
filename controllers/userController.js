@@ -183,11 +183,9 @@ const userController = {
       // Kiểm tra userType admin_staff cho cửa hàng
       const userType = await Role.findOne({ storeId, name: "admin_staff" });
       if (!userType) {
-        return res
-          .status(404)
-          .json({
-            message: "Không tìm thấy userType admin_staff cho cửa hàng này.",
-          });
+        return res.status(404).json({
+          message: "Không tìm thấy userType admin_staff cho cửa hàng này.",
+        });
       }
 
       // Tạo user trên Firebase Authentication bằng Admin SDK
@@ -284,33 +282,46 @@ const userController = {
     }
   },
   updateStoreId: async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { storeId } = req.body;
+    try {
+      const { userId } = req.params;
+      const { storeId } = req.body;
 
-    if (!storeId) {
-      return res.status(400).json({ message: "Thiếu storeId trong yêu cầu." });
+      if (!storeId) {
+        return res
+          .status(400)
+          .json({ message: "Thiếu storeId trong yêu cầu." });
+      }
+
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $set: { storeId } },
+        { new: true, runValidators: true }
+      );
+
+      if (updatedUser) {
+        return res.status(200).json({
+          message: "Cập nhật storeId thành công.",
+          user: updatedUser,
+        });
+      } else {
+        return res.status(404).json({ message: "Không tìm thấy người dùng." });
+      }
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
+  },
 
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      { $set: { storeId } },
-      { new: true, runValidators: true }
-    );
+  updateFCMToken: async (req, res) => {
+    try {
+      const { userId, fcmToken } = req.body;
 
-    if (updatedUser) {
-      return res.status(200).json({
-        message: "Cập nhật storeId thành công.",
-        user: updatedUser,
-      });
-    } else {
-      return res.status(404).json({ message: "Không tìm thấy người dùng." });
+      await User.findOneAndUpdate({ userId }, { fcmToken });
+
+      res.status(200).json({ message: "FCM token updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Error updating FCM token" });
     }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-},
+  },
 };
-
 
 module.exports = userController;
