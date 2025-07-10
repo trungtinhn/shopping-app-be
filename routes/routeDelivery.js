@@ -11,5 +11,5 @@ router.get('/getDistricts', deliveryController.getDistricts);
 router.get('/getWards', deliveryController.getWards);
 router.patch('/confirmDelivery/:id', deliveryController.createGHNOrder);
 router.get('/getGHNOrder/:id', deliveryController.getGHNOrderStatus);
-router.get('/search-address', deliveryController.seacrhAddress);
+router.get('/search-address', deliveryController.searchAddress);
 module.exports = router;

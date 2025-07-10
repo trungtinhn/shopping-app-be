@@ -6,6 +6,7 @@ const Conversation = require("../models/Conversation");
 const Product = require("../models/Product");
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const { sendStoreApprovalEmail } = require("../services/emailService");
 const storeController = {
   addStore: async (req, res) => {
     try {
@@ -112,9 +113,30 @@ const storeController = {
       store.status = "active";
       await store.save();
 
-      res
-        .status(200)
-        .json({ message: "Store approved and registered with GHN", store });
+      // GỬI EMAIL THÔNG BÁO DUYỆT CỬA HÀNG
+      const emailData = {
+        email: store.email,
+        storeName: store.name || store.storeName,
+        storeId: store._id,
+      };
+
+      const emailResult = await sendStoreApprovalEmail(emailData);
+
+      if (emailResult.success) {
+        console.log("Store approval email sent successfully");
+      } else {
+        console.error(
+          "Failed to send store approval email:",
+          emailResult.error
+        );
+        // Không return error để không ảnh hưởng đến việc duyệt store
+      }
+
+      res.status(200).json({
+        message: "Store approved and registered with GHN",
+        store,
+        emailSent: emailResult.success,
+      });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -218,7 +240,7 @@ const storeController = {
       const lastDayIndex = isCurrentMonth
         ? Math.min(today.getDate() - 1, dailyRevenue.length - 1)
         : dailyRevenue.length - 1;
-        
+
       res.json({
         dailyRevenue,
         todayRevenue: `${dailyRevenue[lastDayIndex].revenue.toLocaleString(

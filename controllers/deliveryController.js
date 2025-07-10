@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Order = require("../models/Order"); // Update path if needed
 const Store = require("../models/Store");
+const admin = require("../config/firebase-admin");
 const { updateOrderStatusesGHN } = require("../services/ghnSyncOrder");
 const GHN_TOKEN = process.env.GHN_API_KEY;
 const GHN_API_BASE_URL = process.env.GHN_API_BASE_URL;
@@ -74,7 +75,6 @@ const ghnController = {
     }
   },
 
-  // 3. Tạo đơn hàng GHN sau khi shop duyệt
   createGHNOrder: async (req, res) => {
     const orderId = req.params.id;
     try {
@@ -122,6 +122,7 @@ const ghnController = {
         ghnOrderData,
         { headers: { ShopId: store.ghnShopId } }
       );
+
       const journeyLog = { status: "ready_to_pick", updated_date: new Date() };
       await Order.findByIdAndUpdate(orderId, {
         ghnOrderCode: response.data.data.order_code,
@@ -130,11 +131,29 @@ const ghnController = {
         $push: { journeyLog: journeyLog },
       });
 
+      // 🔥 Upload thông tin đơn hàng lên Firestore
+      const orderSummary = {
+        orderId: order._id.toString(),
+        userId: order.userId,
+        time: new Date().toISOString(),
+        products: order.products.map((p) => ({
+          name: p.name,
+          image: p.image[0] || "",
+          description: `Quantity: ${p.quantity} - Price: ${p.price}`,
+        })),
+      };
+
+      await admin
+        .firestore()
+        .collection("notification")
+        .doc(order._id.toString())
+        .set(orderSummary);
+
       res.json(response.data.data);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: error.response?.data?.message || "Lỗi tạo đơn GHN" });
+      res.status(500).json({
+        message: error.response?.data?.message || "Lỗi tạo đơn GHN",
+      });
     }
   },
 
@@ -260,7 +279,7 @@ const ghnController = {
       });
     }
   },
-  seacrhAddress: async (req, res) => {
+  searchAddress: async (req, res) => {
     const address = req.query.q;
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
       address
@@ -272,6 +291,10 @@ const ghnController = {
           "User-Agent": "MyShoppingApp/1.0 (trungtinh1620@gmail.com)",
         },
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       res.json(data);
     } catch (err) {
