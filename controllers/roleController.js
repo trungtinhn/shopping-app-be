@@ -60,7 +60,6 @@ const roleController = {
     try {
       const { id } = req.params;
       const { name, displayName, permissions } = req.body;
-
       const updated = await Role.findByIdAndUpdate(
         id,
         { name, displayName, permissions },
@@ -92,6 +91,79 @@ const roleController = {
       return res
         .status(500)
         .json({ message: "Error deleting role", error: err });
+    }
+  },
+  getStaffRole: async (req, res) => {
+    try {
+      const { storeId } = req.params;
+
+      if (!storeId) {
+        return res.status(400).json({
+          status: 400,
+          message: "StoreId is required",
+        });
+      }
+
+      // Tìm role admin_staff của store
+      const staffRole = await Role.findOne({
+        storeId: storeId,
+        name: "admin_staff",
+      }).select("_id name displayName permissions");
+
+      if (!staffRole) {
+        return res.status(404).json({
+          status: 404,
+          message: "Staff role not found for this store",
+          data: null,
+        });
+      }
+
+      return res.status(200).json({
+        status: 200,
+        data: staffRole,
+        message: "Staff role found successfully",
+      });
+    } catch (error) {
+      console.error("Error getting staff role:", error);
+      return res.status(500).json({
+        status: 500,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  },
+  checkStaffRole: async (req, res) => {
+    try {
+      const { storeId } = req.params;
+
+      if (!storeId) {
+        return res.status(400).json({
+          status: 400,
+          message: "StoreId is required",
+        });
+      }
+
+      // Kiểm tra xem có role admin_staff không
+      const staffRoleExists = await Role.exists({
+        storeId: storeId,
+        name: "admin_staff",
+      });
+
+      return res.status(200).json({
+        status: 200,
+        data: {
+          hasStaffRole: !!staffRoleExists,
+          storeId: storeId,
+        },
+        message: staffRoleExists ? "Staff role exists" : "Staff role not found",
+      });
+    } catch (error) {
+      console.error("Error checking staff role:", error);
+      return res.status(500).json({
+        status: 500,
+        message: "Internal server error",
+        error: error.message,
+      });
     }
   },
 };
