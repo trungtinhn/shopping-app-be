@@ -1,4 +1,4 @@
-const visionClient = require('../services/vision');
+const visionClient = require('../config/vision');
 
 const visionController = {
     analyzeImage : async (req, res) => {

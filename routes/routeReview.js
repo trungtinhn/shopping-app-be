@@ -8,5 +8,5 @@ router.get('/getReviews', verifyToken , reviewController.getAllReviews);
 router.get('/getReviewById/:id', verifyToken , reviewController.getReviewById);
 router.put('/updateReview/:id', verifyToken ,reviewController.updateReview);
 router.delete('/deleteReview/:id', verifyToken , reviewController.deleteReview);
-router.get('/getReviewsByProductId/:productId', verifyToken, reviewController.getReviewsByProductId);
+router.get('/getReviewsByProductId/:productId', verifyToken , reviewController.getReviewsByProductId);
 module.exports = router;

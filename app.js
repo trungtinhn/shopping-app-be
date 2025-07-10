@@ -39,6 +39,8 @@ const roleRoutes = require("./routes/routeRole");
 const deliveryRoutes = require("./routes/routeDelivery");
 const shippingStatusRoutes = require("./routes/routeShippingStatus");
 const adminAppRoutes = require("./routes/routeAdminApp");
+const vnpayRoutes = require("./routes/routeVnpay");
+const geminiRoutes = require("./routes/routeGemini");
 
 // Load environment variables
 dotenv.config();
@@ -142,6 +144,8 @@ app.use('/api/role', roleRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/shippingStatus', shippingStatusRoutes);
 app.use('/api/adminApp', adminAppRoutes);
+app.use('/api/vnpay', vnpayRoutes);
+app.use('/api/gemini', geminiRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

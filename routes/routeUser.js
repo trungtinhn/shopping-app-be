@@ -13,5 +13,5 @@ router.get('/users', verifyToken, userController.getAllUsers);
 router.post('/registerSocial', verifyToken, userController.registerSocial);
 router.get('/staff/:storeId', verifyToken, userController.getStaffsByStoreId);
 router.post('/staff', verifyToken, userController.createEmployee);
-
+router.post('/updateFCMToken', verifyToken, userController.updateFCMToken);
 module.exports = router;

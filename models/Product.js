@@ -68,9 +68,9 @@ const ProductSchema = new mongoose.Schema({
     default: 'available'
   },
   imageModerationStatus: {
-  type: String,
-  enum: ['safe', 'unsafe', 'unchecked'],
-  default: 'unchecked',
+    type: String,
+    enum: ['safe', 'unsafe', 'unchecked'],
+    default: 'unchecked',
   },
   imageModerationNote: {
     type: String,

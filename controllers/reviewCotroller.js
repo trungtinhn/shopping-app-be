@@ -1,5 +1,7 @@
-const Review = require("../models/Review");
-const Product = require("../models/Product");
+const Review = require('../models/Review');
+const Product = require('../models/Product');
+const User = require('../models/User');
+
 const reviewController = {
   // Thêm mới đánh giá
   addReview: async (req, res) => {
@@ -73,42 +75,38 @@ const reviewController = {
       res.status(500).json({ message: "Failed to get reviews!", error });
     }
   },
+    // Lấy đánh giá theo sản phẩm
+    getReviewsByProductId: async (req, res) => {
+        try {
+            const reviews = await Review.find({ productId: req.params.productId }).lean();
 
-  // Lấy đánh giá theo sản phẩm
-  getReviewsByProductId: async (req, res) => {
-    try {
-      const reviews = await Review.find({ productId: req.params.productId })
-        .populate("userId", "fullName avatar")
-        .lean();
+            if (reviews.length === 0) {
+            return res.status(404).json({ message: 'No reviews found for this product!' });
+            }
 
-      if (reviews.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "No reviews found for this product!" });
-      }
+            const reviewsWithUserDetails = await Promise.all(
+                reviews.map(async (review) => {
+                    const user = await User.findOne({ userId: review.userId }).lean();
+                    if (user) {
+                    return {
+                        ...review,
+                        fullName: user.fullName,
+                        avatar: user.avatar,
+                    };
+                    } else {
+                    return {
+                        ...review,
+                        fullName: 'Unknown',
+                        avatar: '',
+                    };
+                    }
+                })
+            );
 
-      res.status(200).json(reviews);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to get reviews!", error });
-    }
-  },
-
-  // Lấy đánh giá chi tiết theo ID
-  getReviewById: async (req, res) => {
-    try {
-      const review = await Review.findById(req.params.id)
-        .populate("userId", "fullName avatar")
-        .populate("productId", "name");
-
-      if (!review) {
-        return res.status(404).json({ message: "Review not found!" });
-      }
-
-      res.status(200).json(review);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to get review!", error });
-    }
-  },
-};
+            res.status(200).json(reviewsWithUserDetails);
+        } catch (error) {
+            res.status(500).json({ message: 'Failed to get reviews!', error });
+        }
+    },
 
 module.exports = reviewController;

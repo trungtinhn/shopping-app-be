@@ -12,4 +12,5 @@ router.get('/getWards', deliveryController.getWards);
 router.patch('/confirmDelivery/:id', deliveryController.createGHNOrder);
 router.get('/getGHNOrder/:id', deliveryController.getGHNOrderStatus);
 router.get('/search-address', deliveryController.searchAddress);
+router.get('/testNofi/:userId', deliveryController.testNofi);
 module.exports = router;
