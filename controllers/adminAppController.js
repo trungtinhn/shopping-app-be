@@ -49,7 +49,7 @@ const adminAppController = {
               {
                 $group: {
                   _id: null,
-                  total: { $sum: "$totalAmount" }, // Assuming totalAmount field in Order
+                  total: { $sum: "$totalPrice" }, // Assuming totalAmount field in Order
                 },
               },
             ]),

@@ -1,5 +1,6 @@
 const Message = require("../models/Message");
-const Conversation = require("../models/conversation");
+const Conversation = require("../models/Conversation");
+const { checkAvailability } = require("./productController");
 
 const ConverstationController = {
   getConversations: async (req, res) => {
@@ -321,6 +322,74 @@ const ConverstationController = {
       });
     } catch (error) {
       console.error("Error creating conversation:", error);
+      res.status(500).json({
+        success: false,
+        error: "Internal server error",
+      });
+    }
+  },
+  getConversationsByCustomerId: async (req, res) => {
+    try {
+      const { customerId } = req.params;
+      console.log("Customer ID:", customerId);
+      if (!customerId) {
+        return res.status(400).json({ 
+          success: false,
+          error: "customerId is required" 
+        });
+      }
+
+      const conversations = await Conversation.find({
+        customer_id: customerId,
+        status: { $ne: "archived" }, // Không lấy conversations đã archive
+      })
+        .sort({ updated_at: -1 }) // Sắp xếp theo thời gian mới nhất
+        .limit(50); // Giới hạn 50 conversations gần nhất
+
+      res.json({
+        success: true,
+        data: conversations,
+        total: conversations.length,
+      });
+    } catch (error) {
+      console.error("Error fetching conversations by customer ID:", error);
+      res.status(500).json({
+        success: false,
+        error: "Internal server error",
+      });
+    }
+  },
+  checkConversation: async (req, res) => {
+    try {
+      const { customerId, shopId } = req.params;
+
+      if (!customerId || !shopId) {
+        return res.status(400).json({
+          success: false,
+          error: "customerId and shopId are required",
+        });
+      }
+
+      // Kiểm tra xem conversation đã tồn tại chưa
+      const conversation = await Conversation.findOne({
+        customer_id: customerId,
+        shop_id: shopId,
+      });
+
+      if (conversation) {
+        return res.json({
+          success: true,
+          data: conversation,
+          message: "Conversation already exists",
+        });
+      } else {
+        return res.json({
+          success: false,
+          message: "No conversation found between customer and shop",
+        });
+      }
+    } catch (error) {
+      console.error("Error checking conversation:", error);
       res.status(500).json({
         success: false,
         error: "Internal server error",

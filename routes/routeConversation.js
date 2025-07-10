@@ -22,4 +22,9 @@ router.put('/:id/read',verifyToken, ConversationController.markasRead);
 
 router.get('/getConversationsByStoreId/:storeId', verifyToken, ConversationController.getConversationsByStoreId);
 
+router.get('/getConversationsByCustomerId/:customerId', verifyToken, ConversationController.getConversationsByCustomerId);
+
+//Check xem có conversation nào giữa customer và shop không
+router.get('/checkConversation/:customerId/:shopId', verifyToken, ConversationController.checkConversation);
+
 module.exports = router;

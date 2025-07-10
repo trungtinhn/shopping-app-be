@@ -108,7 +108,7 @@ const roleController = {
       const staffRole = await Role.findOne({
         storeId: storeId,
         name: "admin_staff",
-      }).select("_id name displayName permissions");
+      }).select("_id name displayName permissions updatedAt");
 
       if (!staffRole) {
         return res.status(404).json({
