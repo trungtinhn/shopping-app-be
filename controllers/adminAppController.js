@@ -43,7 +43,7 @@ const adminAppController = {
               {
                 $match: {
                   createdAt: { $gte: dayStart, $lte: dayEnd },
-                  status: "completed", // Assuming only completed orders count towards revenue
+                  status: "Completed", // Assuming only completed orders count towards revenue
                 },
               },
               {

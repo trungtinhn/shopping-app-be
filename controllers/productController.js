@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const agenda = require("../services/agenda");
+const Category = require("../models/Category");
 const productController = {
   addProduct: async (req, res) => {
     try {
@@ -166,7 +167,7 @@ const productController = {
         return res.status(400).json({ message: "Store ID is required!" });
       }
 
-      const products = await Product.find({ storeId });
+      const products = await Product.find({ storeId, status: "available" });
       if (!products || products.length === 0) {
         return res
           .status(404)
@@ -229,47 +230,41 @@ const productController = {
 
       const productAvailability = await Promise.all(
         products.map(async (item) => {
-          const product = await Product.findById(item.productId);
+          const product = await Product.findById(item.productId._id);
 
           if (!product) {
             return {
-              productId: item.productId,
+              productId: item.productId._id,
               available: false,
               message: "Product not found",
             };
           }
 
-          const color = product.colors.find((c) => c.name === item.color);
-          if (!color) {
-            return {
-              productId: item.productId,
-              available: false,
-              message: "Color not found",
-            };
-          }
-
-          const type = product.types.find(
-            (t) => t.size === item.size && t.color === color.code
+          // Tìm variant khớp với variantId (nếu có gửi)
+          const variant = product.variants.find(
+            (v) => v._id?.toString() === item.variantId
           );
-          if (!type) {
+
+          if (!variant) {
             return {
-              productId: item.productId,
+              productId: item.productId._id,
               available: false,
-              message: "Type not found",
+              message: "Variant not found",
             };
           }
 
-          if (type.quantity >= item.quantity) {
+          if (variant.quantity >= item.quantity) {
             return {
-              productId: item.productId,
+              productId: item.productId._id,
               available: true,
-              quantityAvailable: type.quantity,
+              quantityAvailable: variant.quantity,
             };
           } else {
             return {
-              productId: item.productId,
+              productId: item.productId._id,
               available: false,
-              quantityAvailable: type.quantity,
+              quantityAvailable: variant.quantity,
+              message: "Insufficient quantity",
             };
           }
         })
@@ -277,11 +272,14 @@ const productController = {
 
       res.status(200).json(productAvailability);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Failed to check product availability!", error });
+      console.error("Error checking availability:", error);
+      res.status(500).json({
+        message: "Failed to check product availability!",
+        error,
+      });
     }
   },
+
   updateImageModerationStatus: async (req, res) => {
     try {
       const { productId } = req.params;

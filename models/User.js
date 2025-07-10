@@ -45,6 +45,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    fcmToken: {
+        type: String,
+        default: null
+    },
+}, { timestamps: true });
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",

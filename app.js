@@ -33,6 +33,8 @@ const roleRoutes = require("./routes/routeRole");
 const deliveryRoutes = require("./routes/routeDelivery");
 const shippingStatusRoutes = require("./routes/routeShippingStatus");
 const adminAppRoutes = require("./routes/routeAdminApp");
+const vnpayRoutes = require("./routes/routeVnpay");
+const geminiRoutes = require("./routes/routeGemini");
 
 dotenv.config()
 mongoose.connect(process.env.MONGODB_URL.replace("<password>", process.env.MONGODB_PASSWORD)).then(() => {
@@ -74,6 +76,8 @@ app.use('/api/role', roleRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/shippingStatus', shippingStatusRoutes);
 app.use('/api/adminApp', adminAppRoutes);
+app.use('/api/vnpay', vnpayRoutes);
+app.use('/api/gemini', geminiRoutes);
 
 
 socketSetup(server);
